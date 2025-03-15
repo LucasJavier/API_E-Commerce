@@ -1,18 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Configuracion Swagger
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('API del E-Commerce')
+    .setDescription('Documentación de la API del E-Commerce')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('documentation', app, documentFactory);
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('apis', app, document); // Endpoint de Swagger: /api
+
+  // Validacion de datos de definidos con los decoradores en los DTOs
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Elimina propiedades no definidas en el DTO
+      forbidNonWhitelisted: true, // Lanza error si hay propiedades no permitidas
+      transform: true, // Asegura que se haga la transformación con class-transformer
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
