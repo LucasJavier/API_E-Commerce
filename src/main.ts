@@ -22,7 +22,7 @@ async function bootstrap() {
     forbidNonWhitelisted: true, // Lanza error si hay propiedades no permitidas
     transform: true, // Asegura que se haga la transformación con class-transformer
   }));
-
+  
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
