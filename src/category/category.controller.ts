@@ -20,7 +20,7 @@ export class CategoryController {
 
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías' })
+  @ApiResponse({ status: 200, description: 'List of categories found' })
   @ApiResponse({ status: 404, description: 'No categories found' })
   findAll() {
     return this.categoryService.findAll();
