@@ -74,6 +74,9 @@ export class ProductService {
         where: { id }
       });
       if(!product) throw new NotFoundException(`Product with id ${id} not found`);
+      if (product.imageUrl) {
+        await deleteFromS3(product.imageUrl); // Implent this function
+      }
       const imageUrl = await uploadToS3(image);
       return await this.prismaService.product.update({
         where: { id },
