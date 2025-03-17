@@ -5,6 +5,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Product } from '@prisma/client'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { validateImage } from '../util/image.validation';
 
 @Controller('product')
 export class ProductController {
@@ -20,7 +21,7 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() image?: Express.Multer.File
   ): Promise<Product> {
-    if (image && !image.mimetype.startsWith('image/')) {
+    if (image && !validateImage(image)) {
       throw new BadRequestException('File is not an image');
     }
     return this.productService.create(createProductDto, image);
@@ -64,7 +65,7 @@ export class ProductController {
   @ApiResponse({ status: 404, description: "Product's image not found" })
   @ApiResponse({ status: 500, description: "Error updating the product's image" })
   updateImage(@Param('id', ParseIntPipe) id: number, @UploadedFile() image: Express.Multer.File): Promise<Product> {
-    if (image && !image.mimetype.startsWith('image/')) {
+    if (image && !validateImage(image)) {
       throw new BadRequestException('File is not an image');
     }
     return this.productService.updateImageProduct(id, image);

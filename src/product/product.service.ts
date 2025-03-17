@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Product } from '@prisma/client';
-// Importar S3
+// Import S3 to upload and delete the file
 
 @Injectable()
 export class ProductService {
