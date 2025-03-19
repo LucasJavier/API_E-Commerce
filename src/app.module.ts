@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CognitoAuthController } from './cognito-auth/cognitoAuth.controller';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
+import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ShoppingCartsModule,
   ],
   controllers: [],
   providers: [],
