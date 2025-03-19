@@ -1,13 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { CategoryModule } from './category/category.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { ProductsModule } from './products/products.module';
+import { ItemsModule } from './items/items.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { ProductModule } from './product/product.module';
+import { CognitoAuthController } from './cognito-auth/cognitoAuth.controller';
+import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ProductModule, CategoryModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    PrismaModule,
+    //ProductsModule,
+    //ItemsModule,
+    //UserModule,
+    //AuthModule,
+    CognitoAuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
