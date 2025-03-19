@@ -11,10 +11,10 @@ import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 @Module({
   imports: [
     PrismaModule,
-    //ProductsModule,
-    //ItemsModule,
-    //UserModule,
-    //AuthModule,
+    ProductsModule,
+    ItemsModule,
+    UserModule,
+    AuthModule,
     CognitoAuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
