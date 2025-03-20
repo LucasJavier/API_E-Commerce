@@ -25,7 +25,7 @@ export class CategoryController {
   @Get()
   @AcceptedRoles('Admin', 'User') // All users can see the categories
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías' })
+  @ApiResponse({ status: 200, description: 'List of categories found' })
   @ApiResponse({ status: 404, description: 'No categories found' })
   findAll() {
     return this.categoryService.findAll();

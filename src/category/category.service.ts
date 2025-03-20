@@ -11,7 +11,10 @@ export class CategoryService {
   async create(createCategoryDto: CreateCategoryDto): Promise<void>{
     try{
       await this.prismaService.category.create({
-        data: createCategoryDto,
+        data: {
+          ...createCategoryDto,
+          updatedAt: new Date(),
+        }
       });
     } catch(error){
       throw new InternalServerErrorException(`Error creating category: ${error.message}`);
@@ -46,9 +49,18 @@ export class CategoryService {
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
     try{
+      const category = await this.prismaService.category.findUnique({
+        where: { id: id },
+      });
+      if(!category){
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
       return await this.prismaService.category.update({
         where: { id: id },
-        data: updateCategoryDto,
+        data: {
+          ...updateCategoryDto,
+          updatedAt: new Date(),
+        }
       });
     } catch(error){
       throw new InternalServerErrorException(`Error updating category: ${error.message}`);
@@ -57,6 +69,12 @@ export class CategoryService {
 
   async remove(id: number): Promise<void> {
     try{
+      const category = await this.prismaService.category.findUnique({
+        where: { id: id },
+      });
+      if(!category){
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
       await this.prismaService.category.delete({
         where: { id: id },
       });
@@ -64,4 +82,4 @@ export class CategoryService {
       throw new InternalServerErrorException(`Error deleting category: ${error.message}`);
     }
   }
-}
+}  
