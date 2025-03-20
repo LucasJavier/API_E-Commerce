@@ -22,7 +22,8 @@ model Product {
   category Category @relation(fields: [categoryId], references: [id])
   imageUrl String?
   createdAt DateTime @default(now())
-  updatedAt DateTime?
+  updatedAt DateTime? @updatedAt
+  wishlist Wishlist[] @relation("WishlistProducts")
 }
 
 model Category{
@@ -30,5 +31,15 @@ model Category{
   name String
   products Product[]
   createdAt DateTime @default(now())
-  updatedAt DateTime? 
+  updatedAt DateTime? @updatedAt
+}
+
+model Wishlist{
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  userId String // Dado por Cognito
+  products Product[] @relation("WishlistProducts")
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt 
 }
