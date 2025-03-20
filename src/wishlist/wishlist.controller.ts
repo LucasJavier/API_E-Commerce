@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, BadRequestException, UseGuards } from '@nestjs/common';
 import { WishlistService } from './wishlist.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from '@prisma/client';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
+import { RolesGuard } from 'src/guard-roles/guard-roles.guard';
+import { AcceptedRoles } from 'src/guard-roles/role.decorator';
 
 @Controller('wishlist')
+@UseGuards(RolesGuard)
+@AcceptedRoles('Admin', 'User') // All users can access the wishlist (who are logged in)
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
 
