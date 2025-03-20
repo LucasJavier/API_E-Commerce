@@ -82,4 +82,4 @@ export class CategoryService {
       throw new InternalServerErrorException(`Error deleting category: ${error.message}`);
     }
   }
-}
+}  
