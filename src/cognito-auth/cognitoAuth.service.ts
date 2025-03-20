@@ -80,46 +80,49 @@ export class CognitoAuthService {
 
   async signIn(loginDto: LoginAuthDto): Promise<any> {
     try {
-      // Autenticación inicial
-      const command = new InitiateAuthCommand({
-        AuthFlow: 'USER_PASSWORD_AUTH',
-        ClientId: this.clientId,
-        AuthParameters: {
-          USERNAME: loginDto.email,
-          PASSWORD: loginDto.password,
-        },
-      });
+        // Autenticación inicial
+        const command = new InitiateAuthCommand({
+            AuthFlow: 'USER_PASSWORD_AUTH',
+            ClientId: this.clientId,
+            AuthParameters: {
+                USERNAME: loginDto.email,
+                PASSWORD: loginDto.password,
+            },
+        });
 
-      const response = await this.cognitoClient.send(command);
-      const tokens = response.AuthenticationResult;
+        const response = await this.cognitoClient.send(command);
+        const tokens = response.AuthenticationResult;
 
-      if (!tokens || !tokens.IdToken) {
-        throw new UnauthorizedException('Authentication failed or no ID token');
-      }
+        if (!tokens || !tokens.IdToken) {
+            throw new UnauthorizedException('Authentication failed or no ID token');
+        }
 
-      // Obtener el rol del usuario desde el ID Token
-      const decodedIdToken = this.decodeJWT(tokens.IdToken); // Decodificar el token de ID
-      const groups = decodedIdToken['cognito:groups']; // Acceder a los grupos
+        // Decodificar el ID Token para obtener el usuario
+        const decodedIdToken = this.decodeJWT(tokens.IdToken);
+        const groups = decodedIdToken['cognito:groups']; // Obtener grupos/roles
+        const userId = decodedIdToken.sub; // El ID del usuario en Cognito
 
-      return {
-        accessToken: tokens.AccessToken,
-        idToken: tokens.IdToken,
-        expiresIn: tokens.ExpiresIn,
-        refreshToken: tokens.RefreshToken,
-        role: groups ? groups[0] : 'Undefined', // Asegurar que sea un arreglo y toma el primer grupo
-      };
+        return {
+            accessToken: tokens.AccessToken,
+            idToken: tokens.IdToken,
+            expiresIn: tokens.ExpiresIn,
+            refreshToken: tokens.RefreshToken,
+            role: groups ? groups[0] : 'Undefined', // Rol del usuario
+            userId, // Agregado el ID del usuario
+        };
     } catch (error) {
-      if (error.name === 'NotAuthorizedException') {
-        throw new UnauthorizedException('Invalid credentials');
-      } else if (error.name === 'UserNotFoundException') {
-        throw new UnauthorizedException('User does not exist');
-      } else {
-        throw new InternalServerErrorException(
-          error.message || 'Authentication failed',
-        );
-      }
+        if (error.name === 'NotAuthorizedException') {
+            throw new UnauthorizedException('Invalid credentials');
+        } else if (error.name === 'UserNotFoundException') {
+            throw new UnauthorizedException('User does not exist');
+        } else {
+            throw new InternalServerErrorException(
+                error.message || 'Authentication failed',
+            );
+        }
     }
-  }
+}
+
 
   // Decodificar JWT (ID Token)
   private decodeJWT(token: string): any {
