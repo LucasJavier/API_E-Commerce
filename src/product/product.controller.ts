@@ -23,7 +23,7 @@ export class ProductController {
   ): Promise<Product> {
       return this.productService.create(createProductDto, image);
   }
-  */
+  
   @Get()
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products found' })
@@ -51,7 +51,6 @@ export class ProductController {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
-  /*
   @Patch(':id/image')
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update an image of a product' })
@@ -61,7 +60,6 @@ export class ProductController {
   updateImage(@Param('id', ParseIntPipe) id: number, @UploadedFile() image: Express.Multer.File): Promise<Product> {
     return this.productService.updateImageProduct(id, image);
   }
-  */
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a product' })
@@ -71,4 +69,5 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
+    */
 }

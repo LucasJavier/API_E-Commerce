@@ -43,11 +43,10 @@ model Wishlist{
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt 
 }
-
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  //cartItems CartItem[]
-  createdAt DateTime  @default(now())
+  id        String   @id // Ahora el ID será el `sub` de Cognito
+  email     String   @unique
+  confirmed Boolean  @default(false)
+  createdAt DateTime @default(now())
   updatedAt DateTime?
 }

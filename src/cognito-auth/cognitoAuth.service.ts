@@ -11,6 +11,7 @@ import {
   SignUpCommand,
   ConfirmSignUpCommand,
   AdminAddUserToGroupCommand,
+  AdminGetUserCommand,
   GetUserCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { ConfigService } from '@nestjs/config';
@@ -18,14 +19,14 @@ import { LoginAuthDto } from './dto/login.dto';
 import { RegisterAuthDto } from './dto/register.dto';
 import { ConfirmAuthDto } from './dto/confirm.dto';
 import { RefreshDto } from './dto/refresh.dto';
-
+import { PrismaService } from 'prisma/prisma.service';
 @Injectable()
 export class CognitoAuthService {
   private cognitoClient: CognitoIdentityProviderClient;
   private userPoolId: string;
   private clientId: string;
-
-  constructor(private configService: ConfigService) {
+  
+  constructor(private readonly prismaService: PrismaService, private configService: ConfigService) {
     this.cognitoClient = new CognitoIdentityProviderClient({
       region: this.configService.get<string>('AWS_REGION'),
     });
@@ -36,7 +37,7 @@ export class CognitoAuthService {
 
   async signUp(signUpDto: RegisterAuthDto): Promise<any> {
     try {
-      // Agregar usuario
+      // Agregar usuario a Cognito
       const command = new SignUpCommand({
         ClientId: this.clientId,
         Username: signUpDto.email,
@@ -49,7 +50,29 @@ export class CognitoAuthService {
 
       const response = await this.cognitoClient.send(command);
 
-      // Agregar al usuario a un grupo
+      // Obtener el ID de Cognito (sub) llamando a AdminGetUser
+      const adminGetUserCommand = new AdminGetUserCommand({
+        UserPoolId: this.userPoolId,
+        Username: signUpDto.email,
+      });
+
+      const userData = await this.cognitoClient.send(adminGetUserCommand);
+      const cognitoId = userData.UserAttributes?.find(attr => attr.Name === 'sub')?.Value;
+
+      if (!cognitoId) {
+        throw new Error('No se pudo obtener el ID de Cognito.');
+      }
+
+      // Guardar usuario en la base de datos con el ID de Cognito
+      await this.prismaService.user.create({
+        data: {
+          id: cognitoId,  // Usar el ID de Cognito como ID en la base de datos
+          email: signUpDto.email,
+          confirmed: false,
+        },
+      });
+
+      // Agregar usuario a un grupo en Cognito
       const groupCommand = new AdminAddUserToGroupCommand({
         UserPoolId: this.userPoolId,
         Username: signUpDto.email,
@@ -63,6 +86,7 @@ export class CognitoAuthService {
       throw new BadRequestException(error.message || 'Sign-up failed');
     }
   }
+  
 
   async confirmSignUp(confirmDto: ConfirmAuthDto): Promise<any> {
     try {
@@ -71,12 +95,26 @@ export class CognitoAuthService {
         Username: confirmDto.email,
         ConfirmationCode: confirmDto.pin,
       });
-
-      return await this.cognitoClient.send(command);
+  
+      // Confirmar en Cognito
+      const response = await this.cognitoClient.send(command);
+  
+      // Actualizar el estado de confirmación del usuario en la base de datos
+      await this.prismaService.user.update({
+        where: {
+          email: confirmDto.email,
+        },
+        data: {
+          confirmed: true,
+        },
+      });
+  
+      return response;
     } catch (error) {
       throw new BadRequestException(error.message || 'Confirmation failed');
     }
   }
+  
 
   async signIn(loginDto: LoginAuthDto): Promise<any> {
     try {
