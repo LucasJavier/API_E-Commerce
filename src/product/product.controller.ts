@@ -10,6 +10,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  /*
   @Post()
   @UseInterceptors(FileInterceptor('image')) // Captura la imagen enviada en 'form-data' con el nombre 'image'
   @ApiOperation({ summary: 'Create a product' })
@@ -22,6 +23,7 @@ export class ProductController {
   ): Promise<Product> {
       return this.productService.create(createProductDto, image);
   }
+  */
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })
@@ -50,6 +52,7 @@ export class ProductController {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
+  /*
   @Patch(':id/image')
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update an image of a product' })
@@ -59,6 +62,7 @@ export class ProductController {
   updateImage(@Param('id', ParseIntPipe) id: number, @UploadedFile() image: Express.Multer.File): Promise<Product> {
     return this.productService.updateImageProduct(id, image);
   }
+  */
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a product' })
