@@ -9,7 +9,6 @@ import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 @Controller('wishlist')
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
-
   /*
   @Post()
   @ApiOperation({ summary: 'Create a wishlist' })

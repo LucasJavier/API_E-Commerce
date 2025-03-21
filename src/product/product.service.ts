@@ -69,6 +69,7 @@ export class ProductService {
       throw new InternalServerErrorException(`Error updating the product: ${error.message}`);
     }
   }
+
   /*
   async updateImageProduct(id: number, image: Express.Multer.File): Promise<Product> {
     try {
@@ -87,8 +88,9 @@ export class ProductService {
     } catch (error) {
       throw new InternalServerErrorException(`Error updating the product image: ${error.message }`);
     }
-  }    
-  */
+  }
+  */    
+
   async remove(id: number): Promise<Product> {
     try {
       const product = await this.prismaService.product.findUnique({

@@ -23,8 +23,7 @@ export class ProductController {
   ): Promise<Product> {
       return this.productService.create(createProductDto, image);
   }
-  */
-
+  
   @Get()
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products found' })
@@ -72,4 +71,5 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
+  
 }
