@@ -1,26 +1,21 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './prisma/prisma.module';
-import { ProductsModule } from './products/products.module';
-import { ItemsModule } from './items/items.module';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { PrismaModule } from 'prisma/prisma.module';
+import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
-import { CognitoAuthController } from './cognito-auth/cognitoAuth.controller';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { CategoryModule } from './category/category.module';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
-import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 
 @Module({
   imports: [
     PrismaModule,
-    ProductsModule,
-    ItemsModule,
-    UserModule,
-    AuthModule,
+    ProductModule,
     CognitoAuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ShoppingCartsModule,
+    CategoryModule,
+    WishlistModule,
   ],
   controllers: [],
   providers: [],
