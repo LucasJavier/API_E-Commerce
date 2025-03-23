@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-  @ApiProperty({ description: 'ID del carrito', example: 1 })
+  @ApiProperty({ description: 'Cart ID'})
   @IsInt()
   @IsNotEmpty()
   cartId: number;
 
-  @ApiProperty({ description: 'ID del usuario', example: 'abc123' })
+  @ApiProperty({ description: 'User ID' })
   @IsString()
   @IsNotEmpty()
   userId: string;
 
-  @ApiProperty({ description: 'Lista de productos en la orden' })
+  @ApiProperty({ description: 'List of products in the order' })
   @IsArray()
   @IsNotEmpty()
   items: { productId: number; quantity: number; price: number }[];

@@ -29,7 +29,7 @@ export class OrderService {
         include: { items: true },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error al crear la orden.');
+      throw new InternalServerErrorException('Error creating order.');
     }
   }
 
@@ -39,7 +39,8 @@ export class OrderService {
       include: { items: true },
     });
 
-    if (!order) throw new NotFoundException(`Orden con ID ${orderId} no encontrada`);
+    if (!order) throw new NotFoundException(`Order with ID ${orderId} 
+not found`);
 
     return order;
   }

@@ -74,7 +74,7 @@ model Order {
   cartId      Int       
   userId      String
   total       Float
-  status      String    @default("PENDING") // Ejemplo: PENDING, PAID, SHIPPED, DELIVERED
+  status      String    @default("PENDING") 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   items       OrderItem[]

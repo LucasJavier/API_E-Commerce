@@ -30,7 +30,7 @@ export class ShoppingCartService {
       include: { items: { include: { product: true } } },
     });
 
-    if (!cart) throw new NotFoundException(`Carrito no encontrado para el usuario ${userId}`);
+    if (!cart) throw new NotFoundException(`Cart not found for the user ${userId}`);
 
     return cart;
   }
@@ -56,11 +56,11 @@ export class ShoppingCartService {
     });
   
     if (!cart) {
-      throw new NotFoundException(`El carrito con ID ${cartId} no existe.`);
+      throw new NotFoundException(`The cart with ID ${cartId} does not exist.`);
     }
   
     if (cart.items.length === 0) {
-      throw new BadRequestException('El carrito está vacío.');
+      throw new BadRequestException('The cart is empty.');
     }
   
     // 2. Extraer items del carrito
