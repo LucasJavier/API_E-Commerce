@@ -1,16 +1,19 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { ShoppingCartsService } from './shopping-carts.service';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ShoppingCartService } from './shopping-cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { CheckoutDto } from './dto/checkout.dto'; // Importar el DTO
 
 @ApiTags('Shopping Cart')
 @Controller('shopping-cart')
 export class ShoppingCartController {
-  constructor(private readonly shoppingCartService: ShoppingCartsService) {}
+  constructor(private readonly shoppingCartService: ShoppingCartService) {}
 
-  @Post()
+  @Post('add')
   @ApiOperation({ summary: 'Crear un nuevo carrito' })
+  @ApiResponse({ status: 201, description: 'Carrito creado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async create(@Body() createCartDto: CreateCartDto) {
     return this.shoppingCartService.createCart(createCartDto);
   }
@@ -32,5 +35,14 @@ export class ShoppingCartController {
   async remove(@Param('id') id: number) {
     return this.shoppingCartService.deleteCart(Number(id));
   }
+
+
+  @Post(':cartId/checkout')
+  @ApiOperation({ summary: 'Realizar el checkout de un carrito' })
+  async checkout(@Param('cartId') cartId: number) {
+    return this.shoppingCartService.checkout(Number(cartId));
+  }
+
 }
+
 

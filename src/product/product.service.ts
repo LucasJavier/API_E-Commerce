@@ -104,4 +104,24 @@ export class ProductService {
       throw new InternalServerErrorException(`Error deleting the product: ${error.message}`);
     }
   }
+
+  async validateStock(items: { productId: number; quantity: number }[]) {
+    for (const item of items) {
+      const product = await this.prismaService.product.findUnique({ where: { id: item.productId } });
+      if (!product || product.stock < item.quantity) {
+        throw new Error(`Stock insuficiente para el producto ID ${item.productId}`);
+      }
+    }
+  }
+
+  async updateStock(items: { productId: number; quantity: number }[]) {
+    for (const item of items) {
+      await this.prismaService.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } },
+      });
+    }
+  }
+
+
 }
