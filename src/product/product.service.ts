@@ -9,6 +9,7 @@ import { Product } from '@prisma/client';
 export class ProductService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  /*
   async create(createProductDto: CreateProductDto, image?: Express.Multer.File): Promise<Product> {
     let imageUrl: string | null = null; //  Inicializo la url como null
     if(image){
@@ -27,6 +28,7 @@ export class ProductService {
       throw new InternalServerErrorException(`Error when creating the product: ${error.message}`);
     }
   }
+  */
 
   async findAll(): Promise<Product[]> {
     try {
@@ -68,6 +70,7 @@ export class ProductService {
     }
   }
 
+  /*
   async updateImageProduct(id: number, image: Express.Multer.File): Promise<Product> {
     try {
       const product = await this.prismaService.product.findUnique({
@@ -88,7 +91,8 @@ export class ProductService {
     } catch (error) {
       throw new InternalServerErrorException(`Error updating the product image: ${error.message }`);
     }
-  }    
+  }
+  */    
 
   async remove(id: number): Promise<Product> {
     try {

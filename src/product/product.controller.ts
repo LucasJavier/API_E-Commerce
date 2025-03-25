@@ -11,6 +11,7 @@ import { validateImage } from '../util/image.validation';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  /*
   @Post()
   @UseInterceptors(FileInterceptor('image')) // Captura la imagen enviada en 'form-data' con el nombre 'image'
   @ApiOperation({ summary: 'Create a product' })
@@ -26,7 +27,7 @@ export class ProductController {
     }
     return this.productService.create(createProductDto, image);
   }
-
+  
   @Get()
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products found' })
@@ -80,4 +81,5 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
+    */
 }
