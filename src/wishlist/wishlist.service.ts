@@ -9,7 +9,7 @@ import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 @Injectable()
 export class WishlistService {
   constructor(private readonly prismaService: PrismaService) {}
-  /*
+  
   async create(createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
     try{
       return await this.prismaService.wishlist.create({
@@ -23,7 +23,7 @@ export class WishlistService {
       throw new InternalServerErrorException('Error creating wishlist');
     }
   }
-  */
+  
   async findAll(): Promise<Wishlist[]> {
     try{
       const wishlists = await this.prismaService.wishlist.findMany();

@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CognitoAuthController } from './cognito-auth/cognitoAuth.controller';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
+import { AdminWebSocketGateway } from './admin-web-socket/admin-web-socket.gateway';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [AdminWebSocketGateway],
 })
 export class AppModule {}

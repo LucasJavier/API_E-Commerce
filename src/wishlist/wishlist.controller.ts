@@ -9,7 +9,7 @@ import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 @Controller('wishlist')
 export class WishlistController {
   constructor(private readonly wishlistService: WishlistService) {}
-  /*
+  
   @Post()
   @ApiOperation({ summary: 'Create a wishlist' })
   @ApiResponse({ status: 201, description: 'Wishlist successfully created' })
@@ -18,7 +18,6 @@ export class WishlistController {
   create(@Body() createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
     return this.wishlistService.create(createWishlistDto);
   }
-  */
 
   @Get()
   @ApiOperation({ summary: 'Get all wishlists' })

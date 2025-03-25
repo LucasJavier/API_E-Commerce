@@ -11,7 +11,6 @@ import { validateImage } from '../util/image.validation';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  /*
   @Post()
   @UseInterceptors(FileInterceptor('image')) // Captura la imagen enviada en 'form-data' con el nombre 'image'
   @ApiOperation({ summary: 'Create a product' })
@@ -81,5 +80,5 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
-    */
+
 }
