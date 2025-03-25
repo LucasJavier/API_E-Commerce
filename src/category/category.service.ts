@@ -11,7 +11,10 @@ export class CategoryService {
   async create(createCategoryDto: CreateCategoryDto): Promise<Category>{
     try{
       return await this.prismaService.category.create({
-        data: createCategoryDto,
+        data: {
+          ...createCategoryDto,
+          updatedAt: new Date(),
+        }
       });
     } catch(error){
       throw new InternalServerErrorException(`Error creating category: ${error.message}`);
@@ -54,7 +57,10 @@ export class CategoryService {
       }
       return await this.prismaService.category.update({
         where: { id: id },
-        data: updateCategoryDto,
+        data: {
+          ...updateCategoryDto,
+          updatedAt: new Date(),
+        }
       });
     } catch(error){
       throw new InternalServerErrorException(`Error updating category: ${error.message}`);

@@ -15,6 +15,7 @@ import { AcceptedRoles } from 'src/guard-roles/role.decorator';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  /*
   @Post()
   @AcceptedRoles('Admin') // Only Admin users can create products
   @UseInterceptors(FileInterceptor('image')) // Captura la imagen enviada en 'form-data' con el nombre 'image'
@@ -31,7 +32,7 @@ export class ProductController {
     }
     return this.productService.create(createProductDto, image);
   }
-
+  
   @Get()
   @AcceptedRoles('Admin', 'User') // Admin and User users can get all products 
   @ApiOperation({ summary: 'Get all products' })
@@ -90,4 +91,5 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
+    */
 }

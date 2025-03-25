@@ -26,7 +26,7 @@ export class CategoryController {
   @Get()
   @AcceptedRoles('Admin', 'User') // Admin and User users can get all categories
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'Lista de categorías' })
+  @ApiResponse({ status: 200, description: 'List of categories found' })
   @ApiResponse({ status: 404, description: 'No categories found' })
   @ApiResponse({ status: 500, description: 'Error getting all the categories' })
   findAll(): Promise<Category[]> {
