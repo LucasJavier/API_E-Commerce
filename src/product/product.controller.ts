@@ -1,17 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Product } from '@prisma/client'
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { validateImage } from '../util/image.validation';
+import { RolesGuard } from 'src/guard-roles/guard-roles.guard';
+import { AcceptedRoles } from 'src/guard-roles/role.decorator';
 
+@ApiTags('Products')
 @Controller('product')
+@UseGuards(RolesGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
+  @AcceptedRoles('Admin') // Only Admin users can create products
   @UseInterceptors(FileInterceptor('image')) // Captura la imagen enviada en 'form-data' con el nombre 'image'
   @ApiOperation({ summary: 'Create a product' })
   @ApiResponse({ status: 201, description: 'Product successfully created' })
@@ -28,6 +33,7 @@ export class ProductController {
   }
   
   @Get()
+  @AcceptedRoles('Admin', 'User') // Admin and User users can get all products 
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products found' })
   @ApiResponse({ status: 404, description: 'No products found' })
@@ -37,6 +43,7 @@ export class ProductController {
   }
 
   @Get(':id')
+  @AcceptedRoles('Admin', 'User') // Admin and User users can get a product
   @ApiOperation({ summary: 'Obtain a product' })
   @ApiParam({ name: 'id', description: 'Product ID', example: 1 })
   @ApiResponse({ status: 200, description: 'Product found' })
@@ -47,6 +54,7 @@ export class ProductController {
   }
 
   @Patch(':id')
+  @AcceptedRoles('Admin') // Only Admin users can update products
   @ApiOperation({ summary: 'Update a product' })
   @ApiParam({ name: 'id', description: 'ID of the product to be updated', example: 1 })
   @ApiBody({ type: UpdateProductDto })
@@ -58,6 +66,7 @@ export class ProductController {
   }
 
   @Patch(':id/image')
+  @AcceptedRoles('Admin') // Only Admin users can update images
   @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({ summary: 'Update an image of a product' })
   @ApiParam({ name: 'id', description: 'ID of the product to be updated', example: 1 })
@@ -72,6 +81,7 @@ export class ProductController {
   }
 
   @Delete(':id')
+  @AcceptedRoles('Admin') // Only Admin users can delete products
   @ApiOperation({ summary: 'Delete a product' })
   @ApiParam({ name: 'id', description: 'ID of the product to be deleted', example: 1 })
   @ApiResponse({ status: 200, description: 'Product correctly eliminated' })
