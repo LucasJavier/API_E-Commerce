@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Product } from '@prisma/client';
-// Importar S3
+// Import S3 to upload and delete the file
 
 @Injectable()
 export class ProductService {
@@ -74,6 +74,9 @@ export class ProductService {
         where: { id }
       });
       if(!product) throw new NotFoundException(`Product with id ${id} not found`);
+      if (product.imageUrl) {
+        await deleteFromS3(product.imageUrl); // Implent this function
+      }
       const imageUrl = await uploadToS3(image);
       return await this.prismaService.product.update({
         where: { id },

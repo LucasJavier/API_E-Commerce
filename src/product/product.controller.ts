@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Product } from '@prisma/client'
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { validateImage } from '../util/image.validation';
 
 @Controller('product')
 export class ProductController {
@@ -20,13 +21,17 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() image?: Express.Multer.File
   ): Promise<Product> {
-      return this.productService.create(createProductDto, image);
+    if (image && !validateImage(image)) {
+      throw new BadRequestException('File is not an image');
+    }
+    return this.productService.create(createProductDto, image);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products found' })
   @ApiResponse({ status: 404, description: 'No products found' })
+  @ApiResponse({ status: 500, description: 'Error getting all the products' })
   findAll(): Promise<Product[]> {
     return this.productService.findAll();
   }
@@ -36,6 +41,7 @@ export class ProductController {
   @ApiParam({ name: 'id', description: 'Product ID', example: 1 })
   @ApiResponse({ status: 200, description: 'Product found' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 500, description: 'Error getting the product' })
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.findOne(id);
   }
@@ -46,6 +52,7 @@ export class ProductController {
   @ApiBody({ type: UpdateProductDto })
   @ApiResponse({ status: 200, description: 'Product correctly updated' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 500, description: 'Error updating the product' })
   updateProduct(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product> {
     return this.productService.updateProduct(id, updateProductDto);
   }
@@ -56,7 +63,11 @@ export class ProductController {
   @ApiParam({ name: 'id', description: 'ID of the product to be updated', example: 1 })
   @ApiResponse({ status: 200, description: "Product's image correctly updated" })
   @ApiResponse({ status: 404, description: "Product's image not found" })
+  @ApiResponse({ status: 500, description: "Error updating the product's image" })
   updateImage(@Param('id', ParseIntPipe) id: number, @UploadedFile() image: Express.Multer.File): Promise<Product> {
+    if (image && !validateImage(image)) {
+      throw new BadRequestException('File is not an image');
+    }
     return this.productService.updateImageProduct(id, image);
   }
 
@@ -65,6 +76,7 @@ export class ProductController {
   @ApiParam({ name: 'id', description: 'ID of the product to be deleted', example: 1 })
   @ApiResponse({ status: 200, description: 'Product correctly eliminated' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 500, description: 'Error deleting the product' })
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
     return this.productService.remove(id);
   }
