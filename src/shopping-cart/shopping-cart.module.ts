@@ -4,7 +4,7 @@ import { ShoppingCartController } from './shopping-cart.controller';
 import { PrismaService } from 'prisma/prisma.service';
 import { ProductModule } from 'src/product/product.module';
 import { OrderModule } from 'src/order/order.module';
-import { ItemService } from 'src/item/item.service';
+import { ItemService } from 'src/item-cart/item-cart.service';
 
 @Module({
   imports: [ProductModule, OrderModule],
