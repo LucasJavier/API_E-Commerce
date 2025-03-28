@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id        String    @id
   email     String    @unique
@@ -14,6 +15,11 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime?
   carts     Cart[]
+
+enum Roles{
+  Admin
+  User
+
 }
 
 model Product {
@@ -23,10 +29,11 @@ model Product {
   price       Int
   stock       Int
   categoryId  Int
-  imageUrl    String?
+  imageUrl    String?    // URL de la imagen
+  imageKey    String?    // Clave de la imagen en S3 (opcional)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime?  @updatedAt
-  items       Item[]
+  items       Item[]  
   category    Category   @relation(fields: [categoryId], references: [id])
   wishlist    Wishlist[] @relation("WishlistProducts")
 }

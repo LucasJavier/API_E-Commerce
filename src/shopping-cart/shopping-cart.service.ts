@@ -103,5 +103,4 @@ export class ShoppingCartService {
     return { message: 'Compra finalizada con éxito', order };
   }
   
-  
 }
