@@ -1,11 +1,11 @@
 import { Controller, Post, Body, Delete, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
-import { ItemService } from './item.service';
-import { CreateItemDto } from '../item/dto/create-item';
-import { UpdateItemDto } from '../item/dto/update-item';
+import { ItemService } from './item-cart.service';
+import { CreateItemDto } from '../item-cart/dto/create-item-cart';
+import { UpdateItemDto } from '../item-cart/dto/update-item-cart';
 
-@ApiTags('Item')
-@Controller('item')
+@ApiTags('Item Cart')
+@Controller('item-cart')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 

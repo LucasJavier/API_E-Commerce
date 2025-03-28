@@ -5,7 +5,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { ProductService } from 'src/product/product.service';
 import { OrderService } from 'src/order/order.service';
 import { CheckoutDto } from './dto/checkout.dto';
-import { ItemService } from '../item/item.service'
+import { ItemService } from '../item-cart/item-cart.service'
 
 @Injectable()
 export class ShoppingCartService {
@@ -104,6 +104,3 @@ export class ShoppingCartService {
   }
   
 }
-
-
-
