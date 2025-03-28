@@ -1,34 +1,54 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateProductDto {
-    @ApiProperty({ description: 'Nombre del producto', example: 'Zapatilla' })
+    @ApiProperty({
+        description: 'Name of the product',
+        example: 'Shoes',
+    })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(50)
     name: string;
 
-    @ApiProperty({ description: 'Descripción del producto', example: 'Zapatilla de deporte' })
+    @ApiProperty({
+        description: 'Description of the product',
+        example: 'Comfortable shoes for running',
+    })
     @IsString()
     @IsNotEmpty()
+    @MaxLength(255)
     description: string;
 
-    @ApiProperty({ description: 'Precio del producto', example: 15000 })
+    @ApiProperty({
+        description: 'Price of the product',
+        example: 15000,
+    })
     @IsNumber()
     @IsNotEmpty()
-    @Transform(({ value }) => Number(value)) // 👈 Convierte el valor a número
+    @Min(0)
+    @Transform(({ value }) => Number(value))
     price: number;
 
-    @ApiProperty({ description: 'Stock del producto', example: 10 })
+    @ApiProperty({
+        description: 'Stock of the product',
+        example: 10,
+    })
     @IsNumber()
     @IsNotEmpty()
-    @Transform(({ value }) => Number(value)) // 👈 Convierte el valor a número
+    @Min(0)
+    @Transform(({ value }) => Number(value))
     stock: number;
 
-    @ApiProperty({ description: 'Categoría del producto', example: 1 })
+    @ApiProperty({
+        description: 'Category ID of the product',
+        example: 1,
+    })
     @IsNumber()
     @IsNotEmpty()
-    @Transform(({ value }) => Number(value)) // 👈 Convierte el valor a número
+    @Min(1)
+    @Transform(({ value }) => Number(value))
     categoryId: number;
 }
 

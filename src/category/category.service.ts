@@ -2,15 +2,15 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { Category } from '@prisma/client';
+import { Category, Product } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<void>{
+  async create(createCategoryDto: CreateCategoryDto): Promise<Category>{
     try{
-      await this.prismaService.category.create({
+      return await this.prismaService.category.create({
         data: {
           ...createCategoryDto,
           updatedAt: new Date(),
@@ -67,7 +67,7 @@ export class CategoryService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<Category> {
     try{
       const category = await this.prismaService.category.findUnique({
         where: { id: id },
@@ -75,11 +75,31 @@ export class CategoryService {
       if(!category){
         throw new NotFoundException(`Category with ID ${id} not found`);
       }
-      await this.prismaService.category.delete({
+      return await this.prismaService.category.delete({
         where: { id: id },
       });
     } catch(error){
       throw new InternalServerErrorException(`Error deleting category: ${error.message}`);
     }
   }
-}  
+  
+  async findProductsByCategoryId(categoryId: number): Promise<{category: Category, products: Product[] | null}> {
+    try {
+      const category = await this.prismaService.category.findUnique({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        throw new NotFoundException(`Category with ID ${categoryId} not found`);
+      }
+      const products = await this.prismaService.product.findMany({
+        where: { categoryId: categoryId },
+      });
+      if (products.length === 0) {
+        throw new NotFoundException(`No products found for category with ID ${categoryId}`);
+      }
+      return {category, products };
+    } catch (error) {
+      throw new InternalServerErrorException(`Error finding products for category: ${error.message}`);
+    }
+  }
+}

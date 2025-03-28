@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id        String    @id
   email     String    @unique
@@ -14,6 +15,11 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime?
   carts     Cart[]
+
+enum Roles{
+  Admin
+  User
+
 }
 
 model Product {
@@ -31,7 +37,6 @@ model Product {
   category    Category   @relation(fields: [categoryId], references: [id])
   wishlist    Wishlist[] @relation("WishlistProducts")
 }
-
 
 model Category {
   id        Int       @id @default(autoincrement())

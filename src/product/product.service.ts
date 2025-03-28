@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Product } from '@prisma/client';
-import { S3Client, PutObjectCommand, DeleteObjectCommand, ObjectCannedACL } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import * as multer from 'multer';
 import { extname } from 'path';
 
@@ -172,7 +172,6 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       });
   
       if (!product) throw new NotFoundException(`Product with id ${id} not found`);
-  
       // Eliminar la imagen asociada de S3 si existe
       if (product.imageKey) {
         await this.deleteImageFromS3(product.imageKey);
@@ -186,7 +185,6 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       throw new InternalServerErrorException(`Error deleting the product: ${error.message}`);
     }
   }
-  
 
   async validateStock(items: { productId: number; quantity: number }[]) {
     for (const item of items) {
