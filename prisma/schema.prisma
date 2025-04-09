@@ -15,11 +15,11 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime?
   carts     Cart[]
+}
 
 enum Roles{
   Admin
   User
-
 }
 
 model Product {

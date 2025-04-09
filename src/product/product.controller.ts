@@ -24,10 +24,11 @@ import { validateImage } from '../util/image.validation';
 import { RolesGuard } from 'src/guard-roles/guard-roles.guard';
 import { AcceptedRoles } from 'src/guard-roles/role.decorator';
 import { Express } from 'express';
+import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
 
 @ApiTags('Products')
 @Controller('product')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

@@ -1,21 +1,27 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Wishlist } from '@prisma/client';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
-// Import 'getUserId'
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
 
+
+@UseGuards(JwtAuthGuard)
 @Injectable()
 export class WishlistService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private eventEmitter: EventEmitter2
+  ) {}
   
-  async create(createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+  async create(createWishlistDto: CreateWishlistDto, userId: string): Promise<Wishlist> {
     try{
       return await this.prismaService.wishlist.create({
         data: {
           ...createWishlistDto,
-          userId: getUserId(), // From Cognito (implement this function)
+          userId: userId,
           updatedAt: new Date(),
         },
       })  
@@ -83,37 +89,47 @@ export class WishlistService {
     }
   }
 
-  async addProductToWishlist(addProductToWishlistDto: AddProductToWishlistDto): Promise<Wishlist> {
+  async addProductToWishlist(
+    addProductToWishlistDto: AddProductToWishlistDto,
+    userId: string
+  ): Promise<Wishlist> {
     const { productId, wishlistId } = addProductToWishlistDto;
 
-    try {
-      const wishlist = await this.prismaService.wishlist.findUnique({
-        where: { id: wishlistId },
-        include: { products: true },
-      });
-      if(!wishlist) {
-        throw new NotFoundException(`Wishlist with ID ${wishlistId} not found`);
-      }
-      const product = await this.prismaService.product.findUnique({
-        where: { id: productId },
-      });
-      if(!product) {
-        throw new NotFoundException(`Product with ID ${productId} not found`);
-      }
-      const productExistsInWishlist = wishlist.products.some((p) => p.id === productId);
-      if(productExistsInWishlist) {
-        throw new BadRequestException(`Product with ID ${productId} is already in the wishlist`);
-      }
-      return await this.prismaService.wishlist.update({
-        where: { id: wishlistId },
-        data: {
-          products: {
-            connect: { id: productId },
-          },
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(`Error adding product to wishlist: ${error.message}`);
+    const wishlist = await this.prismaService.wishlist.findUnique({
+      where: { id: wishlistId },
+      include: { products: true },
+    });
+
+    if(!wishlist) {
+      throw new NotFoundException(`Wishlist with ID ${wishlistId} not found`);
     }
+
+    const product = await this.prismaService.product.findUnique({
+      where: { id: productId },
+    });
+
+    if(!product) {
+      throw new NotFoundException(`Product with ID ${productId} not found`);
+    }
+
+    const productExistsInWishlist = wishlist.products.some((p) => p.id === productId);
+    if(productExistsInWishlist) {
+      throw new BadRequestException(`Product with ID ${productId} is already in the wishlist`);
+    }
+
+    const wishlistAdded = await this.prismaService.wishlist.update({
+      where: { id: wishlistId },
+      data: {
+        products: {
+          connect: { id: productId },
+        },
+      },
+    });
+
+    if(wishlistAdded){
+      this.eventEmitter.emit('wishlist.add', { productId, userId });
+    }
+
+    return wishlistAdded;
   }
 }

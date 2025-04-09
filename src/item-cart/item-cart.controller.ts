@@ -1,10 +1,12 @@
-import { Controller, Post, Body, Delete, Put } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { ItemService } from './item-cart.service';
-import { CreateItemDto } from '../item-cart/dto/create-item-cart';
-import { UpdateItemDto } from '../item-cart/dto/update-item-cart';
+import { CreateItemDto } from './dto/create-item-cart.dto';
+import { UpdateItemDto } from './dto/update-item-cart.dto';
+import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
 
 @ApiTags('Item Cart')
+@UseGuards(JwtAuthGuard)
 @Controller('item-cart')
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
@@ -15,8 +17,9 @@ export class ItemController {
   @ApiResponse({ status: 201, description: 'Product successfully added to the cart' })
   @ApiResponse({ status: 400, description: 'Invalid data' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  async addProductToCart(@Body() createItemDto: CreateItemDto) {
-    return this.itemService.addItemToCart(createItemDto);
+  async addProductToCart(@Body() createItemDto: CreateItemDto, @Request() req) {
+    const userId = req.user.userId;
+    return this.itemService.addItemToCart(createItemDto, userId);
   }
 
   @Delete('remove')
@@ -45,5 +48,3 @@ export class ItemController {
     );
   }
 }
-
-
