@@ -66,8 +66,8 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       return await this.prismaService.product.create({
         data: {
           ...createProductDto,
-          imageUrl,  // Guardamos la URL de la imagen
-          imageKey,  // Guardamos la clave de la imagen en S3
+          imageUrl,
+          imageKey,
           createdAt: new Date(),
         },
       });
@@ -96,8 +96,8 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       return await this.prismaService.product.update({
         where: { id },
         data: {
-          imageUrl,  // Actualiza la URL de la imagen
-          imageKey,  // Actualiza la clave de la imagen
+          imageUrl,
+          imageKey,
           updatedAt: new Date(),
         },
       });
@@ -173,7 +173,7 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
     }
   } 
   
-  async remove(id: number): Promise<any> { // 👈 Ahora devuelve el producto eliminado
+  async remove(id: number): Promise<any> {
     try {
       const existingProduct = await this.prismaService.product.findUnique({ where: { id } });
   
@@ -181,7 +181,7 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
         throw new NotFoundException(`Product with id ${id} not found`);
       }
   
-      return await this.prismaService.product.delete({ where: { id } }); // 👈 Ahora devuelve el producto
+      return await this.prismaService.product.delete({ where: { id } });
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Error deleting the product: ${error.message}`);

@@ -9,7 +9,7 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "prisma/*": ["prisma/*"]
     },
@@ -23,3 +23,4 @@
     "resolveJsonModule": true
   }
 }
+
