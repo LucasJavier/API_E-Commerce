@@ -69,6 +69,7 @@ export class CognitoAuthService {
           id: cognitoId,  // Usar el ID de Cognito como ID en la base de datos
           email: signUpDto.email,
           confirmed: false,
+          role: signUpDto.role ?? 'Undefined'
         },
       });
 
