@@ -61,7 +61,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     if (!token) {
-      console.error('No se encontró token');
+      //console.error('No se encontró token');
       throw isWs 
         ? new WsException('Missing or invalid token') 
         : new UnauthorizedException('Missing or invalid token');
@@ -85,9 +85,9 @@ export class JwtAuthGuard implements CanActivate {
       }
       // Extraer roles de cognito:groups
       const roles = payload['cognito:groups'] || [];
-      console.log('Roles extraídos:', roles);
-      console.log('Email del usuario:', payload.email);
-      console.log('ID de usuario:', payload.sub);
+      //console.log('Roles extraídos:', roles);
+      //console.log('Email del usuario:', payload.email);
+      //console.log('ID de usuario:', payload.sub);
       const user = {
         userId: payload.sub,
         email: payload.email,
