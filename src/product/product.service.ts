@@ -204,4 +204,3 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
     }
   }
 }
-
