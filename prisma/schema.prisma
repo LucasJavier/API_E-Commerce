@@ -21,7 +21,6 @@ model User {
 enum Roles{
   Admin
   User
-
 }
 
 model Product {

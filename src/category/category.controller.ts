@@ -6,10 +6,11 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 import { Category, Product } from '@prisma/client';
 import { RolesGuard } from 'src/guard-roles/guard-roles.guard';
 import { AcceptedRoles } from 'src/guard-roles/role.decorator';
+import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
 
 @ApiTags('Categories') // Agrupa en Swagger
 @Controller('category')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 

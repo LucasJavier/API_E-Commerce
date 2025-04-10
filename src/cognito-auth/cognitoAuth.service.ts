@@ -20,6 +20,7 @@ import { RegisterAuthDto } from './dto/register.dto';
 import { ConfirmAuthDto } from './dto/confirm.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { PrismaService } from 'prisma/prisma.service';
+
 @Injectable()
 export class CognitoAuthService {
   private cognitoClient: CognitoIdentityProviderClient;

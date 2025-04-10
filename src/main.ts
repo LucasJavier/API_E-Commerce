@@ -14,7 +14,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('apis', app, document); // Endpoint de Swagger: /api
+  SwaggerModule.setup('api', app, document); // Endpoint de Swagger: /api
 
   // Validacion de datos de definidos con los decoradores en los DTOs
   app.useGlobalPipes(
@@ -24,6 +24,13 @@ async function bootstrap() {
       transform: true, // Asegura que se haga la transformación con class-transformer
     }),
   );
+
+  app.enableCors({
+    origin: '*', // Solo para desarrollo
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Authorization'],
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

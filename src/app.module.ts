@@ -1,16 +1,22 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'prisma/prisma.module';
 import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
-import { CognitoAuthController } from './cognito-auth/cognitoAuth.controller';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 import { ItemModule } from './item-cart/item-cart.module';
 import { OrderModule } from './order/order.module';
 import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
-import { ItemOrderModule } from './item-order/item-order.module';
+import { ItemOrderModule } from './item-order/item-order.module';;
+import { WishlistModule } from './wishlist/wishlist.module';
+import { CategoryModule } from './category/category.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { PrismaModule } from 'prisma/prisma.module';
+import { UserWebSocketModule } from './webSocket/user-web-socket/user-web-socket.module';
+import { AdminWebSocketModule } from './webSocket/admin-web-socket/admin-web-socket.module';
+import { ProductTrackingModule } from './product-tracking/producttracking.module';
+import { GuardRolesModule } from './guard-roles/guard-roles.module';
+
 @Module({
   imports: [
-    PrismaModule,
     ProductModule,
     ItemModule,
     CognitoAuthModule,
@@ -20,6 +26,14 @@ import { ItemOrderModule } from './item-order/item-order.module';
       isGlobal: true,
     }),
     ItemOrderModule,
+    WishlistModule,
+    CategoryModule,
+    EventEmitterModule.forRoot(),
+    PrismaModule,
+    UserWebSocketModule,
+    AdminWebSocketModule,
+    ProductTrackingModule,
+    GuardRolesModule,
   ],
   controllers: [],
   providers: [],

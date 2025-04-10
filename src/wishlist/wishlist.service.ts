@@ -1,19 +1,36 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { Wishlist } from '@prisma/client';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Injectable()
 export class WishlistService {
-  constructor(private readonly prismaService: PrismaService) {}
 
+  constructor(
+    private readonly prismaService: PrismaService,
+    private eventEmitter: EventEmitter2
+  ) {}
+  
+  async create(createWishlistDto: CreateWishlistDto, userId: string): Promise<Wishlist> {
+    try{
+      return await this.prismaService.wishlist.create({
+        data: {
+          ...createWishlistDto,
+          userId: userId,
+          updatedAt: new Date(),
+        },
+      })  
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating wishlist');
+    }
+  }
+  
   async findAll(): Promise<Wishlist[]> {
     try {
       const wishlists = await this.prismaService.wishlist.findMany();
@@ -82,6 +99,7 @@ export class WishlistService {
 
   async addProductToWishlist(
     addProductToWishlistDto: AddProductToWishlistDto,
+
   ): Promise<Wishlist> {
     const { productId, wishlistId } = addProductToWishlistDto;
 
@@ -131,6 +149,8 @@ export class WishlistService {
         `Error adding product to wishlist: ${error.message}`,
       );
     }
+
+    return wishlistAdded;
   }
 }
 
