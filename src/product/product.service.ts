@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, HttpException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -66,8 +66,8 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       return await this.prismaService.product.create({
         data: {
           ...createProductDto,
-          imageUrl,  // Guardamos la URL de la imagen
-          imageKey,  // Guardamos la clave de la imagen en S3
+          imageUrl,
+          imageKey,
           createdAt: new Date(),
         },
       });
@@ -96,8 +96,8 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
       return await this.prismaService.product.update({
         where: { id },
         data: {
-          imageUrl,  // Actualiza la URL de la imagen
-          imageKey,  // Actualiza la clave de la imagen
+          imageUrl,
+          imageKey,
           updatedAt: new Date(),
         },
       });
@@ -127,65 +127,67 @@ private async uploadToS3(file: Express.Multer.File): Promise<{ imageUrl: string;
   async findAll(): Promise<Product[]> {
     try {
       const products = await this.prismaService.product.findMany();
-      if (products.length === 0) throw new NotFoundException('Products not found');
+  
+      if (!products || products.length === 0) {
+        throw new NotFoundException('Products not found');
+      }
+  
       return products;
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Error getting the products: ${error.message}`);
     }
   }
+  
 
   async findOne(id: number): Promise<Product> {
     try {
-      const product = await this.prismaService.product.findUnique({
-        where: { id },
-      });
-      if (!product) throw new NotFoundException(`Product with id ${id} not found`);
-      return product;
-    } catch (error) {
-      throw new InternalServerErrorException(`Error getting the product: ${error.message}`);
-    }
-  }
-
-  async updateProduct(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
-    try {
-      const product = await this.prismaService.product.findUnique({
-        where: { id },
-      });
-      if (!product) throw new NotFoundException(`Product with id ${id} not found`);
-      return await this.prismaService.product.update({
-        where: { id },
-        data: {
-          ...updateProductDto,
-          updatedAt: new Date(),
-        },
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(`Error updating the product: ${error.message}`);
-    }
-  }
-
-  async remove(id: number): Promise<Product> {
-    try {
-      // Buscar el producto a eliminar
-      const product = await this.prismaService.product.findUnique({
-        where: { id },
-      });
+      const product = await this.prismaService.product.findUnique({ where: { id } });
   
-      if (!product) throw new NotFoundException(`Product with id ${id} not found`);
-      // Eliminar la imagen asociada de S3 si existe
-      if (product.imageKey) {
-        await this.deleteImageFromS3(product.imageKey);
+      if (!product) {
+        throw new NotFoundException(`Product with id ${id} not found`);
       }
   
-      // Eliminar el producto de la base de datos
-      return await this.prismaService.product.delete({
+      return product;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Error getting the product: ${error.message}`);
+    }
+  }  
+
+  async updateProduct(id: number, dto: UpdateProductDto): Promise<Product> {
+    try {
+      const existingProduct = await this.prismaService.product.findUnique({ where: { id } });
+  
+      if (!existingProduct) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      }
+  
+      return await this.prismaService.product.update({
         where: { id },
+        data: dto,
       });
     } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Error updating the product: ${error.message}`);
+    }
+  } 
+  
+  async remove(id: number): Promise<any> {
+    try {
+      const existingProduct = await this.prismaService.product.findUnique({ where: { id } });
+  
+      if (!existingProduct) {
+        throw new NotFoundException(`Product with id ${id} not found`);
+      }
+  
+      return await this.prismaService.product.delete({ where: { id } });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Error deleting the product: ${error.message}`);
     }
   }
-
+  
   async validateStock(items: { productId: number; quantity: number }[]) {
     for (const item of items) {
       const product = await this.prismaService.product.findUnique({ where: { id: item.productId } });
