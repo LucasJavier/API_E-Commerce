@@ -135,16 +135,22 @@ export class WishlistService {
         );
       }
 
-      return await this.prismaService.wishlist.update({
+      const wishlistAdded = await this.prismaService.wishlist.update({
         where: { id: wishlistId },
         data: {
           products: {
             connect: { id: productId },
           },
         },
-
       });
-    } catch (error) {
+
+      if(wishlistAdded){
+          console.log(`Product with ID ${productId} added to wishlist with ID ${wishlistId}`);
+          this.eventEmitter.emit('wishlist.add', { productId, userId });
+        }
+      return wishlistAdded;
+
+      } catch (error) {
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
