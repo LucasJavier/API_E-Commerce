@@ -38,11 +38,11 @@ export class AdminWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
   ) {}
 
   async handleConnection(client: Socket) {
-    console.log(`Cliente: ${client.id}`);
-    console.log('🛡️ Intento de conexión Admin');
-    console.log('Headers recibidos:', client.handshake.headers);
-    console.log('Token recibido:', client.handshake.headers.authorization);
-    console.log('Auth:', client.handshake.auth);
+    //console.log(`Cliente: ${client.id}`);
+    //console.log('🛡️ Intento de conexión Admin');
+    //console.log('Headers recibidos:', client.handshake.headers);
+    //console.log('Token recibido:', client.handshake.headers.authorization);
+    //console.log('Auth:', client.handshake.auth);
     try{
       /*
       Los guards (JwtAuthGuard y RolesGuard) no se ejecutan automáticamente durante el evento handleConnection, solo en los
@@ -92,9 +92,9 @@ export class AdminWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
 
   @SubscribeMessage('subscribe-product')
   async handleSubscribe(client: Socket, productId: number) {
-    console.log('ID de producto recibido del admin:', productId);
+    //console.log('ID de producto recibido del admin:', productId);
     if (isNaN(productId)) {
-      console.log('ID de producto inválido:', productId);
+      //console.log('ID de producto inválido:', productId);
       client.emit('error', 'ID de producto inválido');
     }
     try {
@@ -111,7 +111,7 @@ export class AdminWebSocketGateway implements OnGatewayConnection, OnGatewayDisc
       console.log(`Admin ${client.data.user.userId} suscrito al producto ${productId}`);
       this.trackingService.registerAdminSession(client.data.user.userId, client.id, productId);
       // Enviar actualizaciones cada 2 segundos
-      console.log('[DEBUG] Intervalo iniciado para admin:', client.id);
+      //console.log('[DEBUG] Intervalo iniciado para admin:', client.id);
       const interval = setInterval(() => {
         console.log('[DEBUG] Enviando stats...'); // ✅
         try {
