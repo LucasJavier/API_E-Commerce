@@ -100,7 +100,7 @@ export class WishlistService {
 
   async addProductToWishlist(
     addProductToWishlistDto: AddProductToWishlistDto,
-
+    userId: string
   ): Promise<Wishlist> {
     const { productId, wishlistId } = addProductToWishlistDto;
 
@@ -113,6 +113,10 @@ export class WishlistService {
         throw new NotFoundException(
           `Wishlist with ID ${wishlistId} not found`,
         );
+      }
+
+      if (wishlist.userId !== userId) { 
+        throw new BadRequestException('No tienes permiso para modificar esta wishlist');
       }
 
       const product = await this.prismaService.product.findUnique({
@@ -151,8 +155,6 @@ export class WishlistService {
         `Error adding product to wishlist: ${error.message}`,
       );
     }
-
-    return wishlistAdded;
   }
 
   async removeProductFromWishlist(
