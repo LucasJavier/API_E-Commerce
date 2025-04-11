@@ -96,7 +96,7 @@ export class WishlistController {
     return this.wishlistService.addProductToWishlist(addProductToWishlistDto, userId);
   }
 
-  @Delete('remove-product')
+  @Post('remove-product')
   @ApiOperation({ summary: 'Remove a product from a wishlist' })
   @ApiBody({ type: RemovePoductFromWishlistDto })
   @ApiResponse({ status: 200, description: 'Product successfully removed from wishlist' })
@@ -105,7 +105,7 @@ export class WishlistController {
   removeProductFromWishlist(
     @Body() removeProductFromWishlist: RemovePoductFromWishlistDto,
     @Request() req
-  ) {
+  ): Promise<Wishlist> {
     if(removeProductFromWishlist.productId <= 0){ 
       throw new BadRequestException('Product ID must be greater than 0');
     }

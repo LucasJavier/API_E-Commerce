@@ -1,7 +1,9 @@
 import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class RemovePoductFromWishlistDto {
+    @Type(() => Number) 
     @IsNotEmpty()
     @IsNumber()
     @Min(1)
@@ -11,6 +13,7 @@ export class RemovePoductFromWishlistDto {
     })
     productId: number;
 
+    @Type(() => Number) 
     @IsNotEmpty()
     @IsNumber()
     @Min(1)

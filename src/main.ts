@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -22,6 +22,10 @@ async function bootstrap() {
       whitelist: true, // Elimina propiedades no definidas en el DTO
       forbidNonWhitelisted: true, // Lanza error si hay propiedades no permitidas
       transform: true, // Asegura que se haga la transformación con class-transformer
+      exceptionFactory: (errors) => {
+        console.log('Errores de validación:', errors);
+        return new BadRequestException(errors);
+      }
     }),
   );
 
