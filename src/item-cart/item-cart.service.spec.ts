@@ -1,11 +1,13 @@
 import { ItemService } from './item-cart.service';
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateItemDto } from './dto/create-item-cart';
-import { UpdateItemDto } from './dto/update-item-cart';
+import { CreateItemDto } from '../item-cart/dto/create-item-cart.dto';
+import { UpdateItemDto } from '../item-cart/dto/update-item-cart.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('ItemService', () => {
   let service: ItemService;
   let prisma: PrismaService;
+  let eventEmitter: EventEmitter2;
 
   beforeEach(() => {
     prisma = {
@@ -17,7 +19,11 @@ describe('ItemService', () => {
       },
     } as any;
 
-    service = new ItemService(prisma);
+    eventEmitter = {
+      emit: jest.fn(),
+    } as any;
+
+    service = new ItemService(prisma, eventEmitter);
   });
 
   describe('addItemToCart', () => {
@@ -30,7 +36,7 @@ describe('ItemService', () => {
       });
 
       const dto: CreateItemDto = { cartId: 1, productId: 1, quantity: 3 };
-      const result = await service.addItemToCart(dto);
+      const result = await service.addItemToCart(dto, 'user-123');
 
       expect(prisma.item.findFirst).toHaveBeenCalledWith({
         where: { cartId: 1, productId: 1 },
@@ -38,6 +44,10 @@ describe('ItemService', () => {
       expect(prisma.item.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { quantity: 5 },
+      });
+      expect(eventEmitter.emit).toHaveBeenCalledWith('cart.add', {
+        productId: dto.productId,
+        userId: 'user-123',
       });
       expect(result.quantity).toBe(5);
     });
@@ -48,7 +58,7 @@ describe('ItemService', () => {
       (prisma.item.create as jest.Mock).mockResolvedValue(createdItem);
 
       const dto: CreateItemDto = { cartId: 1, productId: 1, quantity: 3 };
-      const result = await service.addItemToCart(dto);
+      const result = await service.addItemToCart(dto, 'user-123');
 
       expect(prisma.item.create).toHaveBeenCalledWith({
         data: {
@@ -56,6 +66,10 @@ describe('ItemService', () => {
           product: { connect: { id: 1 } },
           quantity: 3,
         },
+      });
+      expect(eventEmitter.emit).toHaveBeenCalledWith('cart.add', {
+        productId: dto.productId,
+        userId: 'user-123',
       });
       expect(result).toEqual(createdItem);
     });
@@ -104,4 +118,5 @@ describe('ItemService', () => {
     });
   });
 });
+
 
