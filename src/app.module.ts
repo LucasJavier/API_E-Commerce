@@ -5,7 +5,6 @@ import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 import { ItemModule } from './item-cart/item-cart.module';
 import { OrderModule } from './order/order.module';
 import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
-import { ItemOrderModule } from './item-order/item-order.module';;
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CategoryModule } from './category/category.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -25,7 +24,6 @@ import { GuardRolesModule } from './guard-roles/guard-roles.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ItemOrderModule,
     WishlistModule,
     CategoryModule,
     EventEmitterModule.forRoot(),

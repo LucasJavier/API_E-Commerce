@@ -3,32 +3,11 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 
 // Configuración
-const ADMIN_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIyNDM4ZjQ3OC1hMDAxLTcwMWYtN2JkZC0wNzBmYzYzMmYzOGUiLCJjb2duaXRvOmdyb3VwcyI6WyJBZG1pbiJdLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfelRCZ3JTUThvIiwiY29nbml0bzp1c2VybmFtZSI6IjI0MzhmNDc4LWEwMDEtNzAxZi03YmRkLTA3MGZjNjMyZjM4ZSIsInByZWZlcnJlZF91c2VybmFtZSI6Ikx1Y2FzIiwib3JpZ2luX2p0aSI6IjczNDEyZmNkLTkzZTAtNGZlNC05ZDJhLTFkNTBiNTBjMjg1ZiIsImF1ZCI6IjJ0M2k0OTlnMGE5dWo3amY1b2RlZGhwMWVsIiwiZXZlbnRfaWQiOiIyNTY1YTk2YS0xNDVlLTRhMGQtOWJjNy0zNTdiNzEwYTc4NmUiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc0NDIyMDQ4MywiZXhwIjoxNzQ0MjI0MDgzLCJpYXQiOjE3NDQyMjA0ODMsImp0aSI6IjJmNzY5Y2I2LTRjODktNGFiNy1hZDJiLTVkYWY2OTE2NjIyMiIsImVtYWlsIjoibHVjYXNqYXZpZXJAeW9wbWFpbC5jb20ifQ.Rhl6lQSnfTznT6ZlQcbg0pOQfzxlB54vbqdf-EjDYQi2_p4j3CEfM_Jv-KuuPO2ekznjLxC0bjQBrOX51zW1cpft0WYqk2hwuFMN4gjUzs-7rSLespCFIbIeJ6L9v3EPhnO0NnY8UfUb03gNwbK2Kx2joCg2fKyJnInoMiBJxc9kOrOgEHs6X9_b180nLeGiXEIwRQ26ZT7_A5jSnBBxe1th-S1xDS901BWrx5Pf_WhuihHU6aQjSU-v4-ove1rlMSGtfOJew-8EaZGvfH89P0VIY9pB5I4_JECCuaaizRPXcSfDXDaOhyVW2iVVlXkoeYhBgmHevYclz4oINYvJaA';  // Reemplazar con token real
-const USER1_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJiNDQ4MTQ0OC05MDUxLTcwNTYtNzRmOC1mMmI1OTJhMWQzMTgiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiYjQ0ODE0NDgtOTA1MS03MDU2LTc0ZjgtZjJiNTkyYTFkMzE4IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTWFyaWFubyIsIm9yaWdpbl9qdGkiOiIyMDY3OGY0NC02MmEyLTQyYTktOGFkMC02YWQxNzAyZjA2ODciLCJhdWQiOiIydDNpNDk5ZzBhOXVqN2pmNW9kZWRocDFlbCIsImV2ZW50X2lkIjoiZDMyOTI1ZGQtZDdkOS00MTRiLWI4NzEtODNiNjFjY2YwMzU4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NDQyMjA0OTYsImV4cCI6MTc0NDIyNDA5NiwiaWF0IjoxNzQ0MjIwNDk2LCJqdGkiOiJlNmQ1MDA3NS1mOWJkLTRiYTYtOThhNi02ZTZkNDNlMjdmY2MiLCJlbWFpbCI6Im1hcmlhbm9AeW9wbWFpbC5jb20ifQ.l2YUghnmkRQDvtUIO6HXQN3rgO9m0SZ3a9hB-JduehOmEarqZmCSgG0nPba5MGzN-Qf2SGtRtXKfgynqKBr1ASw1b91Wy_vP_WebJaNdtNEmWT7-5xugJM0k1MgTLsbsNpPsRu1jRg0AQ_Dlkmm0ZY2iQcRRlRYrX2uWi11det1VAu0N_1JmAK9LHXQe2aY0H6CKvmVB7t5L-_0JcR5MkBBSZKZ4UVjYeqpsyPbI3dBElKsw2rtXe53XuRPld0Yu16cjLYVpX4t6F-GPQZjthsLsrBEytF6q68HoOrpysGbVQ_eidP4d8Y0iTwYwGFJnSJX3feIVkMq0-mPqmm2wuQ'; // Reemplazar con token real
-const USER2_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI3NGQ4ODQxOC01MDgxLTcwYzgtMTQ0My0wNTYyNTQyNGI3NTkiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiNzRkODg0MTgtNTA4MS03MGM4LTE0NDMtMDU2MjU0MjRiNzU5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTWF0ZW8iLCJvcmlnaW5fanRpIjoiZTM3ZjA0YWYtNTEyNS00MjVmLTg5M2MtZWE2YTQyYTg5MGNkIiwiYXVkIjoiMnQzaTQ5OWcwYTl1ajdqZjVvZGVkaHAxZWwiLCJldmVudF9pZCI6IjA2ZDhiMjQ4LWFjZjktNGQxZC05NWI1LWVkZWQxNGE5ZGUzYyIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQ0MjIxMzYyLCJleHAiOjE3NDQyMjQ5NjIsImlhdCI6MTc0NDIyMTM2MiwianRpIjoiN2E2YWU2ZDEtYzA2YS00MDBjLWE1NjItN2M4MzlkNDJhMWZmIiwiZW1haWwiOiJtYXRlb0B5b3BtYWlsLmNvbSJ9.XxHGnNGSvByn6STyCZ9Z5jYBzQgVGCq-FXdetNt5aoG1uGysrO1WMQdyhBWyMx3eyJSFy8jppft3B8Zdd1JQ9cAxxNxhq1dJk2ERLDQKYGDkqe6lsonAwWsCKdSYsByIMiapOsrr9Y7AnDqpe2NSn1jem_QqOhV5O5vYHUa1KrilmwFj_YslpDMt4rPB2mJHoNpdpo1aOWW_ue_sji_HIHrHrWCTt2OPaGKCK64PZ6puUMwGPip0tglz92B_p--5qoC-YjnChvGuZsVA0SJ1QKqiYb38qOwWUNHTywnKaYIuJVZQT2kKUa6hB1nysBzItAV3QjA-_kMNwX7sGso7EQ';
-const USER3_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI5NDk4NDQyOC0zMDUxLTcwMzgtMzI1MS03MzQ4NDIxYWViMDUiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiOTQ5ODQ0MjgtMzA1MS03MDM4LTMyNTEtNzM0ODQyMWFlYjA1IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTG9yZW56byIsIm9yaWdpbl9qdGkiOiJkYTRjODcyOS0xNDk0LTQ5MGUtOGY0NS1lMWI5YmVjZmNkZTMiLCJhdWQiOiIydDNpNDk5ZzBhOXVqN2pmNW9kZWRocDFlbCIsImV2ZW50X2lkIjoiZGMzYWEyNDUtODA5Ny00MDYxLWI5N2UtOWE1NWNkYWUwZWQ4IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NDQyMjE0ODcsImV4cCI6MTc0NDIyNTA4NywiaWF0IjoxNzQ0MjIxNDg3LCJqdGkiOiJhZGFhNjE2YS1iMTI1LTQ0OTAtYThiNy1jODA5YTg4YzJkNWUiLCJlbWFpbCI6ImxvcmVuem9AeW9wbWFpbC5jb20ifQ.Iwe1LKQg17_qA_HWOee9E7Zt6NsVyWIp50-hRftrSWBOK9UkTPBtd9lKnPhrvwjWPYUaQq57WvBzp_Q8we-Yhk8beygO-YPy8ARaCbjtBpEpjHYctjLQNamjjWs-COP6AaE_Igr4QksYhwng1EvUbk0z8naBR9SSipVdzf4veDCFDSGmpEEZ_M3FrmPUL3nWL3CcBPi3DrH6Bm46ay8YI_DFNByIr9g82TJeAMkxtkY50r_tKE9Id2vudI7e8qwV_fiuO5fLNNM8PeJc4fDAWplspqmnvfSbS46lOJW6Ihd_hgDWAI3oYFPb2T-V4PZKXiZg1r0fgdV9ToTGulUiaw';
+const ADMIN_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJkNDQ4NTRjOC04MDcxLTcwNGItNGI4OS02OWY5Yjg0ZDA0MzIiLCJjb2duaXRvOmdyb3VwcyI6WyJBZG1pbiJdLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfelRCZ3JTUThvIiwiY29nbml0bzp1c2VybmFtZSI6ImQ0NDg1NGM4LTgwNzEtNzA0Yi00Yjg5LTY5ZjliODRkMDQzMiIsInByZWZlcnJlZF91c2VybmFtZSI6Ikx1Y2FzMiIsIm9yaWdpbl9qdGkiOiJiY2E3NzdhNi1kNDhhLTQwNzctOTZjMC0wYzEwNzcxYThkNjUiLCJhdWQiOiIydDNpNDk5ZzBhOXVqN2pmNW9kZWRocDFlbCIsImV2ZW50X2lkIjoiMDg1NmMzYjUtYjhhYy00NmQ4LWIyNDMtMzc1ZmY0YmI4ZWQzIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NDQzODQ5NjcsImV4cCI6MTc0NDM4ODU2NywiaWF0IjoxNzQ0Mzg0OTY3LCJqdGkiOiIwZDgyNGY5OS1mNjM2LTRhM2UtYThjMy01OGNlMjYxZjAzMGIiLCJlbWFpbCI6Imx1Y2FzamF2aWVyMkB5b3BtYWlsLmNvbSJ9.lqqjtKBu-pocf4L90n2Ii37v2vL55vYgFY-Pr3qrZlSE5YkCeFUhtyiM3UTz56AQbKUDsrWWhSE4S-mAp73wfVo5KJ-XfilsgMls4duc974mlOBsIhsRqKlfGFGsh_WPFcGtGcupIzn17wmrsG7xJugChcLcwfw19_0-R93m6IODnVz1YjFtwMsP9_wp9ON-ZQKq3dyZ6gMbrr4E5S47IDFh0gflXYMvOL7oGOEledMWvBl6Niniy3y6P9dMhwH9DvVMbQpvLlt12JLDZtalMXeAQYZo8c-kyPl9U3CnU6rnHv9BxevlWIUiozGeXq8SkSBrCRaontcnhCsEE0J9ig';  // Reemplazar con token real
+const USER1_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJjNDc4MjRlOC0xMDkxLTcwZWMtMmJjNS00Yzg4ZGQ1YWE1MDIiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiYzQ3ODI0ZTgtMTA5MS03MGVjLTJiYzUtNGM4OGRkNWFhNTAyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTWFyaWFubzIiLCJvcmlnaW5fanRpIjoiOTVhM2FkMGEtNGJiMy00NzJmLTllYTgtMmI2ZmMwYTExMDIwIiwiYXVkIjoiMnQzaTQ5OWcwYTl1ajdqZjVvZGVkaHAxZWwiLCJldmVudF9pZCI6IjhkOWFmNzkzLTBiNGMtNDE5OS04ODlhLTg0NDg2OTNhNzBlZSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQ0Mzg0OTg1LCJleHAiOjE3NDQzODg1ODUsImlhdCI6MTc0NDM4NDk4NSwianRpIjoiMDk1ZDAwM2UtMTA2Zi00NjI0LWIzMDUtZjU4NzJhOTY4NGFkIiwiZW1haWwiOiJtYXJpYW5vMkB5b3BtYWlsLmNvbSJ9.wMuf07x6ExU3HVngyPKcWnNvhAR-zxmVUJ3kuGjIkwJ8d02L7ziBrNvd11C2XW8616bcKklU0ZqXfnYNPA6Pmo2oVtlxjlMGUjLmcK3Zkw94gCXtgb2-MZwVTBUL2cP7Rd-K6phAqZRvwkAy8sNCzfqha-Ge5ip1MyH4Obc_QDjYHEdRZCZeIUp0xUx09NcICkkj_ywnbEyDr9_Si4u_6BjVE1xXiCzp6PA7ItzGPovF-hXkg1hHeVpDzM9ewvl6SHh6zMRtOo2iGMU5X68Om6lD3dhepPWCwe4dh6vAi1Z0fKpkFPEP8vLS9eopJ9HecFNTcq-SO-dNh25Ydpwd_g'; 
+const USER2_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJkNDQ4ZDRmOC1iMDcxLTcwMTMtNGMyNC1jYzU5ZTUwZDQxMzYiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiZDQ0OGQ0ZjgtYjA3MS03MDEzLTRjMjQtY2M1OWU1MGQ0MTM2IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTWF0ZW8yIiwib3JpZ2luX2p0aSI6Ijc0N2QyNjY3LWIzOTUtNDIzOS04Y2ZlLTYzN2M0MjhiOWYwNCIsImF1ZCI6IjJ0M2k0OTlnMGE5dWo3amY1b2RlZGhwMWVsIiwiZXZlbnRfaWQiOiIzOWI2MWNiZC0wMzY4LTQ5MDUtODI3ZC1jOWY0YTUwZGYyMmUiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc0NDM4NTAwNiwiZXhwIjoxNzQ0Mzg4NjA2LCJpYXQiOjE3NDQzODUwMDYsImp0aSI6ImY4MzkzODczLTlkYjAtNDcxMC1iN2ZkLTNiM2RiNWJhYjQ2NCIsImVtYWlsIjoibWF0ZW8yQHlvcG1haWwuY29tIn0.QvO9xDv_vA67kDd2v4KQFrg3dhnKhku091l-2M1__-aXab3jpwH5660lQI68xJAqZo4XCJOallHuNOlT93SYQyZmH1-T8U4GINMlqz62n5toyJaeMQY1aSy2KaftrqVzcdS5EDZUA_zs8ew_AfEPvAAy9iKuQxAnhuOGPf7aEGFpTj7pYbRzwuEC2HyqiI5P-BNJxGHQDvwHT92c3l6F0BWRS1Qb_Mf3iuPC5mTHqUvxSAhsr5CZMUGJd2WX1kpaTUG1bKhJ3QdgDPkwnm8F0siVK4TDUI1Mk2QBnJeBeBNcHY7JAecIZTkyezbvPw3-GNRYMmEH3VAe9ihe7I0AtQ';
+const USER3_TOKEN = 'eyJraWQiOiJcL0Jsa3BQamMzd05ZVXBRTENZamkwTmhlQWloMFwvbzNCMU5wZ3d6T2tadEk9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIzNDA4YjRiOC03MDQxLTcwNGMtNTk2Ny1mMjhiODNjYjg5NGIiLCJjb2duaXRvOmdyb3VwcyI6WyJVc2VyIl0sImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV96VEJnclNROG8iLCJjb2duaXRvOnVzZXJuYW1lIjoiMzQwOGI0YjgtNzA0MS03MDRjLTU5NjctZjI4YjgzY2I4OTRiIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiTG9yZW56bzIiLCJvcmlnaW5fanRpIjoiY2ExMDg0ODUtMDU0Yi00YjE1LWFhMGYtMWU3YjQ4YTM4ZTYwIiwiYXVkIjoiMnQzaTQ5OWcwYTl1ajdqZjVvZGVkaHAxZWwiLCJldmVudF9pZCI6IjE1ZWM3ZWZkLThmNzgtNDlhYi1iODI3LTJhYzNhOTFmOTRmMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNzQ0Mzg1MDIwLCJleHAiOjE3NDQzODg2MjAsImlhdCI6MTc0NDM4NTAyMCwianRpIjoiNjllNDA0ZWEtOTI0ZC00NzBhLTkzYjAtMDBkYzgxMzZlNDU4IiwiZW1haWwiOiJsb3JlbnpvMkB5b3BtYWlsLmNvbSJ9.yNnDMmgDr6-4MPyNnPdRpKfYeo4mK8bsxwtnJ7klcb79V5UwyiyuL6hTOZoaoBNtzOhwMiOejjpMv8GzBFBOmQE9lWBNSOMhEXHR_io6JRn7aoHgNsAvNrlmpaS0x2v0sr42-YEQFcoYo881XEBDGS2jVni0gcekFPoSTLbc3fJFGJwwek9nUADgZ4Cxk8X1kZQTdTESUorAw9SgtyFuXCvGI0rs8-wW24KCl66F6saCnKeg4DK0T0fQ_R91VLQnr5tNb5KQOxQMkdo9cAsE88hE-Gbh2ClLwqXyWJgI3a4UZJfmgMLEXy_u5iLVocCmpWObYVm1GkGcdtuCTso2EA';
 const PRODUCT_ID = 1; // ID del producto a monitorear
-
-// Función para decodificar el token JWT (sin validar)
-function decodeJWT(token: string): any {
-  try {
-    const payload = token.split('.')[1];
-    const decodedPayload = Buffer.from(payload, 'base64').toString('utf8');
-    return JSON.parse(decodedPayload);
-  } catch (error) {
-    console.error('Error decodificando token:', error);
-    return null;
-  }
-}
-
-// Depuración: decodificar y mostrar el rol del token Admin
-const decodedAdmin = decodeJWT(ADMIN_TOKEN);
-console.log('Decoded Admin Token:', decodedAdmin);
-if (decodedAdmin && decodedAdmin['cognito:groups']) {
-  console.log('Rol del Admin:', decodedAdmin['cognito:groups']);
-} else {
-  console.log('No se encontró "cognito:groups" en el token Admin.');
-}
 
 // 1. Cliente Admin (Monitorea el producto)
 const adminSocket = io('ws://localhost:3000/admin', {
@@ -64,32 +43,22 @@ const userSockets3 = io('ws://localhost:3000/user', {
 
 const userSockets = [userSockets1, userSockets2, userSockets3];
 const tokens = [USER1_TOKEN, USER2_TOKEN, USER3_TOKEN];
+const wishlistIds = [2,3,4];
+const cartIds = [2,3,4];
 
 
 // Función para simular actividad de usuarios
-async function simulateUserActivity(userSocket: any, index: number, token: string) {
+async function simulateUserActivity(userSocket: any, index: number, token: string, wishlistId: number, cartId: number) {
     console.log(`👤 Usuario ${index + 1} simulando`);
-
-    let wishlistId: number;
-    try {
-        const response = await axios.post('http://localhost:3000/wishlist',
-            { name: `Wishlist Usuario ${index + 1}` },
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-    wishlistId = response.data.id;
-    console.log(`📝 Usuario ${index + 1} creó wishlist ID: ${wishlistId}`);
-  } catch (error) {
-    console.error(`❌ Error creando wishlist (Usuario ${index + 1}):`, error.response?.data?.message || error.message);
-    return;
-  }
 
     // Usuario comienza a ver el producto
     userSocket.emit('view-product', PRODUCT_ID);
   
+    // Simular agregar a carrito (vía HTTP)
     setTimeout(async () => {
         try {
             await axios.post('http://localhost:3000/item-cart/add', { 
-                cartId: 1,
+                cartId: cartId,
                 productId: PRODUCT_ID,
                 quantity: 1 
             }, {
@@ -115,6 +84,30 @@ async function simulateUserActivity(userSocket: any, index: number, token: strin
             console.error(`❌ Error en wishlist (Usuario ${index + 1}):`, error.message);
         }
     }, 5000 + (index * 1000));
+}
+
+async function cleanupTestData() {
+  console.log('\n🧹 Limpiando datos de prueba...');
+  
+   try {
+    for (const [index, token] of tokens.entries()) {
+      try {
+        const response = await axios.post('http://localhost:3000/wishlist/remove-product', {
+            productId: PRODUCT_ID,
+            wishlistId: wishlistIds[index],
+          }, {
+          headers: { 
+            Authorization: `Bearer ${token}` 
+          }
+        });
+        console.log(`✅ Wishlist ${wishlistIds[index]} limpiada`);
+      } catch (error) {
+        console.error(`❌ Error limpiando wishlist ${wishlistIds[index]}:`, error.response?.data?.message || error.message);
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error general:', error.message);
+  }
 }
 
 // Configurar handlers para el Admin
@@ -145,7 +138,7 @@ adminSocket.on('error', (error) => {
 userSockets.forEach((userSocket, index) => {
   userSocket.on('connect', () => {
     console.log(`👤 Usuario ${index + 1} conectado`);
-    simulateUserActivity(userSocket, index, tokens[index]);
+    simulateUserActivity(userSocket, index, tokens[index], wishlistIds[index], cartIds[index]);
   });
 
   userSocket.on('disconnect', () => {
@@ -154,10 +147,17 @@ userSockets.forEach((userSocket, index) => {
 });
 
 // Manejar cierre del script
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\n🔌 Desconectando todos los clientes...');
+
+  // Ciero el socket admin
   adminSocket.close();
-  userSockets.forEach(userSocket => userSocket.close());
+
+  // Limpiar datos 
+  await cleanupTestData(); 
+  
+  // Cerrar todos los sockets de usuarios
+  userSockets.forEach(userSocket => userSocket.close())
   process.exit();
 });
 

@@ -18,6 +18,7 @@ import { Wishlist } from '@prisma/client';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
+import { RemovePoductFromWishlistDto } from './dto/remove-product-from-wishlist.dto';
 
 @ApiTags('Wishlist')
 @Controller('wishlist')
@@ -93,5 +94,25 @@ export class WishlistController {
     }
     const userId = req.user.userId;
     return this.wishlistService.addProductToWishlist(addProductToWishlistDto, userId);
+  }
+
+  @Post('remove-product')
+  @ApiOperation({ summary: 'Remove a product from a wishlist' })
+  @ApiBody({ type: RemovePoductFromWishlistDto })
+  @ApiResponse({ status: 200, description: 'Product successfully removed from wishlist' })
+  @ApiResponse({ status: 404, description: 'Wishlist or Product not found' })
+  @ApiResponse({ status: 500, description: 'Error removing product from wishlist' })
+  removeProductFromWishlist(
+    @Body() removeProductFromWishlist: RemovePoductFromWishlistDto,
+    @Request() req
+  ): Promise<Wishlist> {
+    if(removeProductFromWishlist.productId <= 0){ 
+      throw new BadRequestException('Product ID must be greater than 0');
+    }
+    if(removeProductFromWishlist.wishlistId <= 0){
+      throw new BadRequestException('Wishlist ID must be greater than 0');
+    }
+    const userId = req.user.userId;
+    return this.wishlistService.removeProductFromWishlist(removeProductFromWishlist, userId);
   }
 }

@@ -7,6 +7,7 @@ import { Wishlist } from '@prisma/client';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
+import { RemovePoductFromWishlistDto } from './dto/remove-product-from-wishlist.dto';
 
 @UseGuards(JwtAuthGuard)
 @Injectable()
@@ -99,7 +100,7 @@ export class WishlistService {
 
   async addProductToWishlist(
     addProductToWishlistDto: AddProductToWishlistDto,
-
+    userId: string
   ): Promise<Wishlist> {
     const { productId, wishlistId } = addProductToWishlistDto;
 
@@ -112,6 +113,10 @@ export class WishlistService {
         throw new NotFoundException(
           `Wishlist with ID ${wishlistId} not found`,
         );
+      }
+
+      if (wishlist.userId !== userId) { 
+        throw new BadRequestException('No tienes permiso para modificar esta wishlist');
       }
 
       const product = await this.prismaService.product.findUnique({
@@ -130,7 +135,7 @@ export class WishlistService {
         );
       }
 
-      return await this.prismaService.wishlist.update({
+      const wishlistAdded = await this.prismaService.wishlist.update({
         where: { id: wishlistId },
         data: {
           products: {
@@ -138,7 +143,14 @@ export class WishlistService {
           },
         },
       });
-    } catch (error) {
+
+      if(wishlistAdded){
+          console.log(`Product with ID ${productId} added to wishlist with ID ${wishlistId}`);
+          this.eventEmitter.emit('wishlist.add', { productId, userId });
+        }
+      return wishlistAdded;
+
+      } catch (error) {
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
@@ -149,8 +161,52 @@ export class WishlistService {
         `Error adding product to wishlist: ${error.message}`,
       );
     }
-
-    return wishlistAdded;
   }
+
+  async removeProductFromWishlist(
+    removeProductFromWishlist: RemovePoductFromWishlistDto,
+    userId: string
+  ): Promise<Wishlist> {
+    const { productId, wishlistId } = removeProductFromWishlist;
+  
+    const wishlist = await this.prismaService.wishlist.findUnique({
+      where: { id: wishlistId },
+      include: { products: true },
+    });
+  
+    if (!wishlist) {
+      throw new NotFoundException(`Wishlist with ID ${wishlistId} not found`);
+    }
+
+    if (wishlist.userId !== userId) { 
+      throw new BadRequestException('No tienes permiso para modificar esta wishlist');
+    }
+
+    const product = await this.prismaService.product.findUnique({
+      where: { id: productId },
+    });
+
+    if(!product) {
+      //console.log(`Product with ID ${productId} not found`);
+      throw new NotFoundException(`Product with ID ${productId} not found`);
+    }
+  
+    const productExistsInWishlist = wishlist.products.some((p) => p.id === productId);
+    if (!productExistsInWishlist) {
+      throw new BadRequestException(`Product with ID ${productId} is not in the wishlist`);
+    }
+  
+    const updatedWishlist = await this.prismaService.wishlist.update({
+      where: { id: wishlistId },
+      data: {
+        products: {
+          disconnect: { id: productId },
+        },
+      },
+    });
+  
+    return updatedWishlist;
+  }
+
 }
 

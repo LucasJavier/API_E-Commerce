@@ -34,8 +34,8 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       targets
     );
-    console.log('Roles requeridos:', requiredRoles);
-    console.log('Roles del usuario:', user.roles); 
+    //console.log('Roles requeridos:', requiredRoles);
+    //console.log('Roles del usuario:', user.roles); 
     if (!requiredRoles?.length) return true; // If there are no required roles, we allow the access
 
     // Verificar al menos un rol requerido está presente
