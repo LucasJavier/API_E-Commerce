@@ -6,7 +6,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { Wishlist } from '@prisma/client';
 import { AddProductToWishlistDto } from './dto/add-product-to-wishlist.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
+import { JwtAuthGuard } from '../cognito-auth/cognito-auth.guard';
 import { RemovePoductFromWishlistDto } from './dto/remove-product-from-wishlist.dto';
 
 @UseGuards(JwtAuthGuard)
