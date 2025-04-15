@@ -3,7 +3,6 @@ import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
 import { CognitoAuthModule } from './cognito-auth/cognitoAuth.module';
 import { ItemModule } from './item-cart/item-cart.module';
-import { OrderModule } from './order/order.module';
 import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { CategoryModule } from './category/category.module';
@@ -19,7 +18,6 @@ import { GuardRolesModule } from './guard-roles/guard-roles.module';
     ProductModule,
     ItemModule,
     CognitoAuthModule,
-    OrderModule,
     ShoppingCartModule,
     ConfigModule.forRoot({
       isGlobal: true,

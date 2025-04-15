@@ -3,8 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { PrismaService } from 'prisma/prisma.service';
 import { Server } from 'socket.io'
 import { JwtAuthGuard } from 'src/cognito-auth/cognito-auth.guard';
-import { RolesGuard } from 'src/guard-roles/guard-roles.guard';
-import { AcceptedRoles } from 'src/guard-roles/role.decorator';
+
 
 @Injectable()
 @UseGuards(JwtAuthGuard)

@@ -3,17 +3,12 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ProductService } from '../product/product.service';
-import { OrderService } from '../order/order.service';
-import { CheckoutDto } from './dto/checkout.dto';
-import { ItemService } from '../item-cart/item-cart.service'
 
 @Injectable()
 export class ShoppingCartService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly productService: ProductService,
-    private readonly orderService: OrderService,
-    private readonly itemService: ItemService
   ) {}
 
   async createCart(createCartDto: CreateCartDto) {
