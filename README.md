@@ -3,4 +3,4 @@ Link deploy:
 
 Modelo BD:
 
-![Modelo relacional de mi base de datos](assets/Modelo BD.png)
+![Modelo relacional de mi base de datos](assets/ModeloBD.png)
